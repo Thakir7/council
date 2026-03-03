@@ -1,40 +1,44 @@
 export default async function handler(req, res) {
-  // Only allow POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Rate limiting header (basic protection)
   res.setHeader('X-Content-Type-Options', 'nosniff');
 
-  const { messages, max_tokens } = req.body;
+  const { messages } = req.body;
 
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: 'Invalid request body' });
   }
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,   // ← المفتاح هنا على السيرفر فقط
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: max_tokens || 1000,
-        messages,
-      }),
-    });
+    const userMessage = messages[messages.length - 1]?.content || '';
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: userMessage }] }],
+          generationConfig: { maxOutputTokens: 1000, temperature: 0.8 },
+        }),
+      }
+    );
 
     const data = await response.json();
 
     if (!response.ok) {
-      return res.status(response.status).json({ error: data.error?.message || 'API error' });
+      return res.status(response.status).json({ error: data.error?.message || 'Gemini API error' });
     }
 
-    return res.status(200).json(data);
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    // Return in same format as Anthropic so frontend works unchanged
+    return res.status(200).json({
+      content: [{ type: 'text', text }]
+    });
+
   } catch (error) {
     console.error('API Error:', error);
     return res.status(500).json({ error: 'Internal server error' });
