@@ -6,364 +6,196 @@
 <title>المجلس الاستشاري الذكي</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --gold: #C9A84C;
-    --gold-light: #E8C97A;
-    --deep: #0D1B2A;
-    --dark: #112233;
-    --card: #16293D;
-    --card2: #1a2f45;
-    --border: rgba(201,168,76,0.22);
-    --text: #F0E8D5;
-    --muted: rgba(240,232,213,0.5);
-    --green: #2ECC8A;
-    --amber: #F5A623;
-    --rose: #E8556A;
-    --blue: #4DA8DA;
-    --teal: #1ABC9C;
-  }
-
-  * { margin:0; padding:0; box-sizing:border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--deep);
-    color: var(--text);
-    font-family: 'Tajawal', sans-serif;
-    min-height: 100vh;
-  }
-
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 0;
-    background:
-      radial-gradient(ellipse at 15% 10%, rgba(201,168,76,0.07) 0%, transparent 45%),
-      radial-gradient(ellipse at 85% 85%, rgba(77,168,218,0.05) 0%, transparent 45%),
-      repeating-linear-gradient(45deg, transparent, transparent 60px, rgba(201,168,76,0.012) 60px, rgba(201,168,76,0.012) 61px);
-    pointer-events: none;
-  }
-
-  .wrapper { position:relative; z-index:1; max-width:1060px; margin:0 auto; padding:28px 18px 60px; }
-
-  /* ── HEADER ── */
-  header { text-align:center; padding:36px 20px 26px; border-bottom:1px solid var(--border); margin-bottom:32px; }
-  header::before { content:'✦  ✦  ✦'; display:block; color:var(--gold); font-size:13px; letter-spacing:10px; margin-bottom:14px; opacity:.6; }
-  header h1 { font-family:'Amiri',serif; font-size:clamp(24px,4.5vw,42px); color:var(--gold); text-shadow:0 0 40px rgba(201,168,76,.25); line-height:1.3; }
-  header p { margin-top:8px; color:var(--muted); font-size:14px; font-weight:300; }
-
-  /* ── TOPIC INPUT BOX ── */
-  .topic-section {
-    background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02));
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 26px 28px;
-    margin-bottom: 28px;
-    transition: border-color .3s;
-  }
-  .topic-section:focus-within { border-color: rgba(201,168,76,.55); }
-
-  .topic-label {
-    display:flex; align-items:center; gap:10px;
-    font-size:13px; color:var(--gold); letter-spacing:2px; margin-bottom:14px; font-weight:600;
-  }
-  .topic-label span { font-size:18px; }
-
-  .topic-input-wrap { display:flex; gap:10px; align-items:flex-end; }
-
-  #topic-input {
-    flex:1;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(201,168,76,0.25);
-    border-radius: 12px;
-    padding: 14px 18px;
-    color: var(--text);
-    font-family: 'Tajawal', sans-serif;
-    font-size: 15px;
-    resize: none;
-    min-height: 70px;
-    outline: none;
-    transition: border-color .3s, background .3s;
-    line-height: 1.6;
-  }
-  #topic-input::placeholder { color: var(--muted); }
-  #topic-input:focus { border-color: var(--gold); background: rgba(255,255,255,0.06); }
-
-  .btn-start {
-    background: linear-gradient(135deg, var(--gold), #A07830);
-    color: #0D1B2A;
-    border: none;
-    padding: 14px 26px;
-    border-radius: 12px;
-    font-family: 'Tajawal', sans-serif;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: all .3s;
-    white-space: nowrap;
-    box-shadow: 0 4px 20px rgba(201,168,76,.25);
-    min-width: 130px;
-  }
-  .btn-start:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(201,168,76,.35); }
-  .btn-start:disabled { opacity:.45; cursor:not-allowed; transform:none; }
-
-  .examples-row {
-    display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;
-  }
-  .example-chip {
-    background: rgba(201,168,76,0.08);
-    border: 1px solid rgba(201,168,76,0.18);
-    border-radius: 20px;
-    padding: 5px 14px;
-    font-size: 12px;
-    color: rgba(240,232,213,0.7);
-    cursor: pointer;
-    transition: all .2s;
-  }
-  .example-chip:hover { background: rgba(201,168,76,0.16); color:var(--gold-light); border-color:rgba(201,168,76,.4); }
-
-  /* ── MEMBERS ── */
-  .members-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:28px; }
-
-  .member-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px 14px;
-    transition: all .35s;
-    position: relative; overflow:hidden;
-  }
-  .member-card::after { content:''; position:absolute; top:0; right:0; width:50px; height:50px; border-radius:0 14px 0 50px; }
-  .member-card:nth-child(1)::after { background:radial-gradient(circle,rgba(201,168,76,.1),transparent); }
-  .member-card:nth-child(2)::after { background:radial-gradient(circle,rgba(77,168,218,.08),transparent); }
-  .member-card:nth-child(3)::after { background:radial-gradient(circle,rgba(46,204,138,.08),transparent); }
-  .member-card:nth-child(4)::after { background:radial-gradient(circle,rgba(232,85,106,.08),transparent); }
-  .member-card:nth-child(5)::after { background:radial-gradient(circle,rgba(26,188,156,.08),transparent); }
-
-  .member-card.speaking {
-    border-color: var(--gold);
-    box-shadow: 0 0 22px rgba(201,168,76,.22);
-    transform: translateY(-3px);
-  }
-  .member-card.speaking .speaking-dot { opacity:1; }
-
-  .speaking-dot {
-    position:absolute; top:12px; left:12px;
-    width:8px; height:8px; border-radius:50%;
-    background:var(--green);
-    opacity:0;
-    transition: opacity .3s;
-    animation: pulse 1.2s infinite;
-  }
-  @keyframes pulse { 0%,100%{transform:scale(1);opacity:.8} 50%{transform:scale(1.5);opacity:1} }
-
-  .member-avatar { width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:10px;border:1px solid transparent; }
+  :root{--gold:#C9A84C;--gold-light:#E8C97A;--deep:#0D1B2A;--card:#16293D;--border:rgba(201,168,76,0.22);--text:#F0E8D5;--muted:rgba(240,232,213,0.5);--green:#2ECC8A;--amber:#F5A623;--rose:#E8556A;--blue:#4DA8DA;--teal:#1ABC9C;}
+  *{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+  body{background:var(--deep);color:var(--text);font-family:'Tajawal',sans-serif;min-height:100vh;}
+  body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 15% 10%,rgba(201,168,76,.07) 0%,transparent 45%),radial-gradient(ellipse at 85% 85%,rgba(77,168,218,.05) 0%,transparent 45%),repeating-linear-gradient(45deg,transparent,transparent 60px,rgba(201,168,76,.012) 60px,rgba(201,168,76,.012) 61px);pointer-events:none;}
+  .wrapper{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:28px 18px 60px;}
+  header{text-align:center;padding:36px 20px 26px;border-bottom:1px solid var(--border);margin-bottom:32px;position:relative;}
+  header::before{content:'✦  ✦  ✦';display:block;color:var(--gold);font-size:13px;letter-spacing:10px;margin-bottom:14px;opacity:.6;}
+  header h1{font-family:'Amiri',serif;font-size:clamp(24px,4.5vw,42px);color:var(--gold);text-shadow:0 0 40px rgba(201,168,76,.25);line-height:1.3;}
+  header p{margin-top:8px;color:var(--muted);font-size:14px;font-weight:300;}
+  .admin-btn{position:absolute;top:20px;left:20px;background:transparent;border:none;cursor:pointer;opacity:.15;transition:opacity .3s;font-size:20px;padding:6px;}
+  .admin-btn:hover{opacity:.7;}
+  .topic-section{background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(201,168,76,.02));border:1px solid var(--border);border-radius:18px;padding:26px 28px;margin-bottom:28px;transition:border-color .3s;}
+  .topic-section:focus-within{border-color:rgba(201,168,76,.55);}
+  .topic-label{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--gold);letter-spacing:2px;margin-bottom:14px;font-weight:600;}
+  .topic-input-wrap{display:flex;gap:10px;align-items:flex-end;}
+  #topic-input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.25);border-radius:12px;padding:14px 18px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:15px;resize:none;min-height:70px;outline:none;transition:border-color .3s,background .3s;line-height:1.6;}
+  #topic-input::placeholder{color:var(--muted);}
+  #topic-input:focus{border-color:var(--gold);background:rgba(255,255,255,.06);}
+  .btn-start{background:linear-gradient(135deg,var(--gold),#A07830);color:#0D1B2A;border:none;padding:14px 26px;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all .3s;white-space:nowrap;box-shadow:0 4px 20px rgba(201,168,76,.25);min-width:130px;}
+  .btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(201,168,76,.35);}
+  .btn-start:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+  .examples-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+  .example-chip{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.18);border-radius:20px;padding:5px 14px;font-size:12px;color:rgba(240,232,213,.7);cursor:pointer;transition:all .2s;}
+  .example-chip:hover{background:rgba(201,168,76,.16);color:var(--gold-light);border-color:rgba(201,168,76,.4);}
+  .members-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:28px;}
+  .member-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 14px;transition:all .35s;position:relative;overflow:hidden;}
+  .member-card::after{content:'';position:absolute;top:0;right:0;width:50px;height:50px;border-radius:0 14px 0 50px;}
+  .member-card:nth-child(1)::after{background:radial-gradient(circle,rgba(201,168,76,.1),transparent);}
+  .member-card:nth-child(2)::after{background:radial-gradient(circle,rgba(77,168,218,.08),transparent);}
+  .member-card:nth-child(3)::after{background:radial-gradient(circle,rgba(46,204,138,.08),transparent);}
+  .member-card:nth-child(4)::after{background:radial-gradient(circle,rgba(232,85,106,.08),transparent);}
+  .member-card:nth-child(5)::after{background:radial-gradient(circle,rgba(26,188,156,.08),transparent);}
+  .member-card.speaking{border-color:var(--gold);box-shadow:0 0 22px rgba(201,168,76,.22);transform:translateY(-3px);}
+  .member-card.speaking .speaking-dot{opacity:1;}
+  .speaking-dot{position:absolute;top:12px;left:12px;width:8px;height:8px;border-radius:50%;background:var(--green);opacity:0;transition:opacity .3s;animation:pulse 1.2s infinite;}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.5);opacity:1}}
+  .member-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:10px;border:1px solid transparent;}
   .member-card:nth-child(1) .member-avatar{background:linear-gradient(135deg,rgba(201,168,76,.25),rgba(201,168,76,.08));border-color:rgba(201,168,76,.35);}
   .member-card:nth-child(2) .member-avatar{background:linear-gradient(135deg,rgba(77,168,218,.25),rgba(77,168,218,.08));border-color:rgba(77,168,218,.35);}
   .member-card:nth-child(3) .member-avatar{background:linear-gradient(135deg,rgba(46,204,138,.25),rgba(46,204,138,.08));border-color:rgba(46,204,138,.35);}
   .member-card:nth-child(4) .member-avatar{background:linear-gradient(135deg,rgba(232,85,106,.25),rgba(232,85,106,.08));border-color:rgba(232,85,106,.35);}
   .member-card:nth-child(5) .member-avatar{background:linear-gradient(135deg,rgba(26,188,156,.25),rgba(26,188,156,.08));border-color:rgba(26,188,156,.35);}
-
-  .member-name { font-weight:700; font-size:13px; margin-bottom:3px; }
-  .member-role { font-size:10.5px; color:var(--muted); line-height:1.4; }
-  .member-exp { display:inline-block; margin-top:7px; font-size:10px; padding:2px 9px; border-radius:20px; font-weight:600; }
+  .member-name{font-weight:700;font-size:13px;margin-bottom:3px;}
+  .member-role{font-size:10.5px;color:var(--muted);line-height:1.4;}
+  .member-exp{display:inline-block;margin-top:7px;font-size:10px;padding:2px 9px;border-radius:20px;font-weight:600;}
   .member-card:nth-child(1) .member-exp{background:rgba(201,168,76,.13);color:var(--gold);}
   .member-card:nth-child(2) .member-exp{background:rgba(77,168,218,.13);color:var(--blue);}
   .member-card:nth-child(3) .member-exp{background:rgba(46,204,138,.13);color:var(--green);}
   .member-card:nth-child(4) .member-exp{background:rgba(232,85,106,.13);color:var(--rose);}
   .member-card:nth-child(5) .member-exp{background:rgba(26,188,156,.13);color:var(--teal);}
-
-  /* ── DISCUSSION AREA ── */
-  #discussion-area { display:none; margin-top:10px; }
-
-  .session-header {
-    background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.02));
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:18px 22px;
-    margin-bottom:22px;
-    display:flex; align-items:center; gap:14px;
-  }
-  .session-icon { font-size:26px; flex-shrink:0; }
-  .session-title-text h3 { font-size:16px; color:var(--gold); margin-bottom:3px; }
-  .session-title-text p { font-size:12.5px; color:var(--muted); line-height:1.5; }
-
-  #messages-container { display:flex; flex-direction:column; gap:0; }
-
-  .message {
-    display:flex; gap:13px;
-    padding:18px 0;
-    border-bottom:1px solid rgba(201,168,76,.07);
-    opacity:0;
-    animation: fadeSlide .45s ease forwards;
-  }
-  @keyframes fadeSlide { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-
-  .msg-avatar { width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;margin-top:2px;border:1px solid transparent; }
+  #discussion-area{display:none;margin-top:10px;}
+  .session-header{background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.02));border:1px solid var(--border);border-radius:14px;padding:18px 22px;margin-bottom:22px;display:flex;align-items:center;gap:14px;}
+  .session-icon{font-size:26px;flex-shrink:0;}
+  .session-title-text h3{font-size:16px;color:var(--gold);margin-bottom:3px;}
+  .session-title-text p{font-size:12.5px;color:var(--muted);line-height:1.5;}
+  #messages-container{display:flex;flex-direction:column;gap:0;}
+  .message{display:flex;gap:13px;padding:18px 0;border-bottom:1px solid rgba(201,168,76,.07);opacity:0;animation:fadeSlide .45s ease forwards;}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  .msg-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;margin-top:2px;border:1px solid transparent;}
   .c1 .msg-avatar{background:rgba(201,168,76,.14);border-color:rgba(201,168,76,.28);}
   .c2 .msg-avatar{background:rgba(77,168,218,.14);border-color:rgba(77,168,218,.28);}
   .c3 .msg-avatar{background:rgba(46,204,138,.14);border-color:rgba(46,204,138,.28);}
   .c4 .msg-avatar{background:rgba(232,85,106,.14);border-color:rgba(232,85,106,.28);}
   .c5 .msg-avatar{background:rgba(26,188,156,.14);border-color:rgba(26,188,156,.28);}
-
-  .msg-content { flex:1; }
-  .msg-header { display:flex; align-items:center; gap:9px; margin-bottom:7px; flex-wrap:wrap; }
-  .msg-name { font-weight:700; font-size:13.5px; }
-  .msg-title-tag { font-size:10px; padding:2px 8px; border-radius:20px; font-weight:500; }
+  .msg-content{flex:1;}
+  .msg-header{display:flex;align-items:center;gap:9px;margin-bottom:7px;flex-wrap:wrap;}
+  .msg-name{font-weight:700;font-size:13.5px;}
+  .msg-title-tag{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;}
   .c1 .msg-title-tag{background:rgba(201,168,76,.13);color:var(--gold);}
   .c2 .msg-title-tag{background:rgba(77,168,218,.13);color:var(--blue);}
   .c3 .msg-title-tag{background:rgba(46,204,138,.13);color:var(--green);}
   .c4 .msg-title-tag{background:rgba(232,85,106,.13);color:var(--rose);}
   .c5 .msg-title-tag{background:rgba(26,188,156,.13);color:var(--teal);}
-
-  .msg-text { font-size:14.5px; line-height:1.85; color:rgba(240,232,213,.9); }
-  .msg-text b { color:var(--gold-light); }
-
-  /* typing indicator */
-  .typing-indicator {
-    display:flex; gap:13px;
-    padding:16px 0;
-    opacity:0;
-    animation: fadeSlide .3s ease forwards;
-  }
-  .typing-dots { display:flex; align-items:center; gap:5px; padding:10px 16px; background:rgba(255,255,255,0.04); border-radius:20px; }
-  .typing-dots span { width:7px;height:7px;border-radius:50%;background:var(--gold);opacity:.4;animation:dot 1.2s infinite; }
+  .msg-text{font-size:14.5px;line-height:1.85;color:rgba(240,232,213,.9);}
+  .msg-text b{color:var(--gold-light);}
+  .typing-indicator{display:flex;gap:13px;padding:16px 0;opacity:0;animation:fadeSlide .3s ease forwards;}
+  .typing-dots{display:flex;align-items:center;gap:5px;padding:10px 16px;background:rgba(255,255,255,.04);border-radius:20px;}
+  .typing-dots span{width:7px;height:7px;border-radius:50%;background:var(--gold);opacity:.4;animation:dot 1.2s infinite;}
   .typing-dots span:nth-child(2){animation-delay:.2s;}
   .typing-dots span:nth-child(3){animation-delay:.4s;}
   @keyframes dot{0%,80%,100%{transform:scale(.8);opacity:.3}40%{transform:scale(1.1);opacity:.9}}
-
-  /* Resolution */
-  .resolution-wrapper {
-    background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.02));
-    border:1px solid rgba(201,168,76,.35);
-    border-radius:16px;
-    padding:24px;
-    margin-top:16px;
-    animation: fadeSlide .5s ease forwards;
-  }
-  .resolution-wrapper h3 { font-family:'Amiri',serif; font-size:20px; color:var(--gold); margin-bottom:16px; display:flex; align-items:center; gap:10px; }
-
-  .rec-item { display:flex; gap:12px; align-items:flex-start; padding:11px 0; border-bottom:1px solid rgba(201,168,76,.1); }
+  .resolution-wrapper{background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.35);border-radius:16px;padding:24px;margin-top:16px;}
+  .resolution-wrapper h3{font-family:'Amiri',serif;font-size:20px;color:var(--gold);margin-bottom:16px;}
+  .rec-item{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid rgba(201,168,76,.1);}
   .rec-item:last-child{border-bottom:none;}
-  .rec-num { width:26px;height:26px;border-radius:50%;background:rgba(201,168,76,.15);color:var(--gold);font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px; }
-  .rec-text { font-size:13.5px; line-height:1.75; color:rgba(240,232,213,.88); }
-  .rec-text strong { color:var(--gold-light); }
-
-  /* loading spinner */
-  .loading-overlay {
-    display:none;
-    position:fixed; inset:0; z-index:100;
-    background:rgba(13,27,42,.85);
-    backdrop-filter:blur(4px);
-    align-items:center; justify-content:center;
-    flex-direction:column; gap:18px;
-    text-align:center;
-  }
-  .loading-overlay.show { display:flex; }
-  .spinner { width:50px;height:50px;border:3px solid rgba(201,168,76,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .9s linear infinite; }
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .loading-text { color:var(--gold-light); font-size:15px; font-weight:600; }
-  .loading-sub { color:var(--muted); font-size:12px; }
-
-  /* Reset btn */
-  .btn-reset {
-    display:inline-flex; align-items:center; gap:7px;
-    background:rgba(232,85,106,.12);
-    border:1px solid rgba(232,85,106,.25);
-    color:var(--rose);
-    padding:9px 20px;
-    border-radius:25px;
-    font-family:'Tajawal',sans-serif;
-    font-size:13px; font-weight:600;
-    cursor:pointer; transition:all .25s;
-    margin-top:20px;
-  }
-  .btn-reset:hover { background:rgba(232,85,106,.22); border-color:rgba(232,85,106,.4); }
-
-  footer { text-align:center; padding:28px 0 10px; border-top:1px solid var(--border); margin-top:30px; color:var(--muted); font-size:12px; }
+  .rec-num{width:26px;height:26px;border-radius:50%;background:rgba(201,168,76,.15);color:var(--gold);font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+  .rec-text{font-size:13.5px;line-height:1.75;color:rgba(240,232,213,.88);}
+  .rec-text strong{color:var(--gold-light);}
+  .btn-reset{display:inline-flex;align-items:center;gap:7px;background:rgba(232,85,106,.12);border:1px solid rgba(232,85,106,.25);color:var(--rose);padding:9px 20px;border-radius:25px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .25s;margin-top:20px;}
+  .btn-reset:hover{background:rgba(232,85,106,.22);}
+  footer{text-align:center;padding:28px 0 10px;border-top:1px solid var(--border);margin-top:30px;color:var(--muted);font-size:12px;}
   footer span{color:var(--gold);opacity:.7;}
+  @media(max-width:600px){.topic-input-wrap{flex-direction:column;}.btn-start{width:100%;}}
 
-  @media(max-width:600px){
-    .topic-input-wrap{flex-direction:column;}
-    .btn-start{width:100%;}
-  }
+  /* ══ ADMIN MODAL ══ */
+  .modal-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px;}
+  .modal-overlay.show{display:flex;}
+  .modal-box{background:#0f2235;border:1px solid rgba(201,168,76,.4);border-radius:20px;width:100%;max-width:700px;max-height:92vh;overflow-y:auto;padding:28px;}
+  .modal-box h2{font-family:'Amiri',serif;color:var(--gold);font-size:21px;margin-bottom:4px;}
+  .modal-sub{color:var(--muted);font-size:12px;margin-bottom:22px;}
+  .modal-close{float:left;background:transparent;border:none;color:var(--muted);font-size:24px;cursor:pointer;line-height:1;transition:color .2s;}
+  .modal-close:hover{color:var(--rose);}
+  .pw-screen{text-align:center;padding:30px 0;}
+  .pw-screen p{color:var(--muted);font-size:14px;margin-bottom:18px;}
+  .pw-input{background:rgba(255,255,255,.05);border:1px solid rgba(201,168,76,.3);border-radius:10px;padding:13px 20px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:16px;width:100%;max-width:300px;outline:none;text-align:center;letter-spacing:4px;}
+  .pw-input:focus{border-color:var(--gold);}
+  .pw-error{color:var(--rose);font-size:12px;margin-top:8px;min-height:18px;}
+  .pw-btn{margin-top:16px;background:linear-gradient(135deg,var(--gold),#A07830);color:#0D1B2A;border:none;padding:12px 36px;border-radius:25px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;cursor:pointer;}
+  .editor-screen{display:none;}
+  .editor-title{font-size:12px;color:var(--gold);letter-spacing:2px;font-weight:700;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+  .member-editor{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;}
+  .med-header{display:flex;align-items:center;gap:10px;margin-bottom:13px;}
+  .med-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+  .med-header b{font-size:13px;}
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+  .frow.full{grid-template-columns:1fr;}
+  .fg label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;letter-spacing:1px;}
+  .fg input,.fg textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.2);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;transition:border-color .2s;}
+  .fg input:focus,.fg textarea:focus{border-color:rgba(201,168,76,.5);}
+  .fg textarea{resize:vertical;min-height:85px;line-height:1.6;}
+  .save-btn{width:100%;background:linear-gradient(135deg,var(--gold),#A07830);color:#0D1B2A;border:none;padding:13px;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer;margin-top:6px;transition:all .3s;}
+  .save-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,168,76,.3);}
+  .save-msg{text-align:center;color:var(--green);font-size:13px;margin-top:10px;min-height:20px;font-weight:600;}
+  .reset-btn{width:100%;background:transparent;border:1px solid rgba(232,85,106,.3);color:var(--rose);padding:10px;border-radius:10px;font-family:'Tajawal',sans-serif;font-size:13px;cursor:pointer;margin-top:8px;}
+  .reset-btn:hover{background:rgba(232,85,106,.1);}
+  .cpw-section{margin-top:22px;padding-top:16px;border-top:1px solid var(--border);}
+  .cpw-label{font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:10px;}
+  .cpw-row{display:flex;gap:10px;}
+  .cpw-row input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.2);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;}
+  .cpw-btn{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:9px 16px;border-radius:8px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .cpw-msg{font-size:12px;color:var(--green);margin-top:6px;min-height:18px;}
 </style>
 </head>
 <body>
 
-<div class="loading-overlay" id="loading">
-  <div class="spinner"></div>
-  <div class="loading-text">المجلس يتداول...</div>
-  <div class="loading-sub">يجري الأعضاء نقاشاً معمقاً حول الموضوع المطروح</div>
+<!-- ADMIN MODAL -->
+<div class="modal-overlay" id="admin-modal">
+  <div class="modal-box">
+    <h2>⚙️ إعدادات المجلس <button class="modal-close" onclick="closeAdmin()">×</button></h2>
+    <p class="modal-sub">تخصيص أعضاء المجلس وشخصياتهم — مرئي لك فقط</p>
+
+    <div class="pw-screen" id="pw-screen">
+      <p>🔐 أدخل كلمة المرور للوصول</p>
+      <input class="pw-input" type="password" id="pw-input" placeholder="••••••" onkeydown="if(event.key==='Enter')checkPw()">
+      <div class="pw-error" id="pw-error"></div><br>
+      <button class="pw-btn" onclick="checkPw()">دخول</button>
+    </div>
+
+    <div class="editor-screen" id="editor-screen">
+      <div class="editor-title">✏️ تعديل الأعضاء الخمسة</div>
+      <div id="editor-list"></div>
+      <button class="save-btn" onclick="saveMembers()">💾 حفظ وتطبيق التعديلات</button>
+      <div class="save-msg" id="save-msg"></div>
+      <button class="reset-btn" onclick="resetDefaults()">↩️ استعادة الأعضاء الافتراضيين</button>
+      <div class="cpw-section">
+        <div class="cpw-label">🔑 تغيير كلمة المرور</div>
+        <div class="cpw-row">
+          <input type="password" id="new-pw" placeholder="كلمة المرور الجديدة">
+          <button class="cpw-btn" onclick="changePw()">تغيير</button>
+        </div>
+        <div class="cpw-msg" id="cpw-msg"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="wrapper">
-
-  <!-- HEADER -->
   <header>
+    <button class="admin-btn" onclick="openAdmin()" title="إعدادات">⚙️</button>
     <h1>المجلس الاستشاري الذكي</h1>
     <p>أدخل أي موضوع ليناقشه المجلس ويخرج بتوصيات إبداعية</p>
   </header>
 
-  <!-- TOPIC INPUT -->
   <div class="topic-section">
-    <div class="topic-label">
-      <span>📌</span> موضوع الجلسة
-    </div>
+    <div class="topic-label"><span>📌</span> موضوع الجلسة</div>
     <div class="topic-input-wrap">
-      <textarea id="topic-input" placeholder="اكتب موضوع الجلسة هنا... مثال: تطوير السياحة الجبلية في منطقة عسير، أو استراتيجية تحول رقمي لشركة ناشئة، أو خطة لتنشيط الاستثمار في القطاع الصحي..."></textarea>
+      <textarea id="topic-input" placeholder="اكتب موضوع الجلسة هنا..."></textarea>
       <button class="btn-start" id="btn-start" onclick="startSession()">🚀 ابدأ الجلسة</button>
     </div>
     <div class="examples-row">
-      <span class="example-chip" onclick="setTopic('تطوير السياحة الجبلية في منطقة عسير')">🏔️ السياحة الجبلية في عسير</span>
+      <span class="example-chip" onclick="setTopic('تطوير السياحة الجبلية في منطقة عسير')">🏔️ السياحة الجبلية</span>
       <span class="example-chip" onclick="setTopic('أجاويد عسير 4 وكيف يتم الاتفاق على مشاريع تفوز بالمبادرة')">🏆 أجاويد عسير 4</span>
       <span class="example-chip" onclick="setTopic('استراتيجية الاستدامة البيئية لمدينة أبها')">🌿 استدامة أبها</span>
-      <span class="example-chip" onclick="setTopic('تحفيز الاستثمار الخاص في القطاع الثقافي بالسعودية')">🎭 الاستثمار الثقافي</span>
-      <span class="example-chip" onclick="setTopic('تطوير منظومة النقل العام في المدن السعودية الصغيرة')">🚌 النقل العام</span>
+      <span class="example-chip" onclick="setTopic('تحفيز الاستثمار الخاص في القطاع الثقافي')">🎭 الاستثمار الثقافي</span>
     </div>
   </div>
 
-  <!-- MEMBERS -->
-  <div class="section-title" style="font-size:12px;color:var(--gold);letter-spacing:3px;margin-bottom:14px;opacity:.75;">أعضاء المجلس الاستشاري</div>
-  <div class="members-grid">
-    <div class="member-card" id="mc-1">
-      <div class="speaking-dot"></div>
-      <div class="member-avatar">👔</div>
-      <div class="member-name">ذاكر القاسم</div>
-      <div class="member-role">رئيس المجلس — إدارة، مالية، سياحة</div>
-      <span class="member-exp">خبرة 20 سنة</span>
-    </div>
-    <div class="member-card" id="mc-2">
-      <div class="speaking-dot"></div>
-      <div class="member-avatar">✈️</div>
-      <div class="member-name">علي السيد</div>
-      <div class="member-role">خبير السياحة والاستثمار السياحي</div>
-      <span class="member-exp">خبرة 15 سنة</span>
-    </div>
-    <div class="member-card" id="mc-3">
-      <div class="speaking-dot"></div>
-      <div class="member-avatar">🌿</div>
-      <div class="member-name">عبدالرحمن البديوي</div>
-      <div class="member-role">ثقافة، بيئة، تنمية مجتمعية</div>
-      <span class="member-exp">خبرة 15 سنة</span>
-    </div>
-    <div class="member-card" id="mc-4">
-      <div class="speaking-dot"></div>
-      <div class="member-avatar">⚖️</div>
-      <div class="member-name">المستشار عبدالرحمن السعدون</div>
-      <div class="member-role">الخبير القانوني والتشريعي</div>
-      <span class="member-exp">خبير قانوني</span>
-    </div>
-    <div class="member-card" id="mc-5">
-      <div class="speaking-dot"></div>
-      <div class="member-avatar">🌱</div>
-      <div class="member-name">م.سعدية</div>
-      <div class="member-role">استدامة بيئية وتصميم حضري</div>
-      <span class="member-exp">خبير الاستدامة</span>
-    </div>
-  </div>
+  <div style="font-size:12px;color:var(--gold);letter-spacing:3px;margin-bottom:14px;opacity:.75;">أعضاء المجلس الاستشاري</div>
+  <div class="members-grid" id="members-grid"></div>
 
-  <!-- DISCUSSION AREA -->
   <div id="discussion-area">
     <div class="session-header">
       <div class="session-icon">📋</div>
@@ -376,206 +208,201 @@
     <button class="btn-reset" onclick="resetSession()">🔄 موضوع جديد</button>
   </div>
 
-  <footer>
-    <span>المجلس الاستشاري الذكي</span> — مدعوم بالذكاء الاصطناعي
-  </footer>
+  <footer><span>المجلس الاستشاري الذكي</span> — مدعوم بالذكاء الاصطناعي</footer>
 </div>
 
 <script>
-const members = [
-  { id:1, name:'ذاكر القاسم', title:'رئيس المجلس', cls:'c1', emoji:'👔',
-    persona: 'أنت رئيس مجلس استشاري، خبير 20 سنة في الإدارة والمالية والسياحة. أسلوبك قيادي، تبدأ بافتتاحية تضع الإطار العام وتحدد المحاور الرئيسية للنقاش. ثم تلقي تعليقاً ختامياً توافقياً يجمع آراء الأعضاء ويبني عليها توصيات عملية.' },
-  { id:2, name:'عبدالرحمن البديوي', title:'خبير السياحة والاستثمار', cls:'c2', emoji:'✈️',
-    persona: 'أنت خبير استثمار سياحي بخبرة 15 سنة. تركز على الجدوى الاقتصادية، فرص الاستثمار، استقطاب الزوار، والعوائد المادية. تستشهد بأمثلة من تجارب دولية ناجحة.' },
-  { id:3, name:'علي السيد', title:'خبيرة الثقافة والبيئة', cls:'c3', emoji:'🌿',
-    persona: 'أنت خبيرة في الثقافة والبيئة والتنمية المجتمعية بخبرة 15 سنة. تركزين على الهوية الثقافية، الحفاظ على الموروث، إشراك المجتمع المحلي، والأثر البيئي. ترفضين الحلول الجاهزة التي تتجاهل الخصوصية المحلية.' },
-  { id:4, name:'المستشار عبدالرحمن السعدون', title:'الخبير القانوني', cls:'c4', emoji:'⚖️',
-    persona: 'أنت خبير قانوني وتشريعي. تركز على الجوانب القانونية، التراخيص، الشراكات، الأطر التنظيمية، والمخاطر القانونية. تحرص على التطبيق العملي ضمن الأنظمة والتشريعات السارية.' },
-  { id:5, name:'م. سعيدة', title:'خبير الاستدامة والتصميم', cls:'c5', emoji:'🌱',
-    persona: 'أنت خبير في الاستدامة البيئية والتصميم الحضري. تدعو إلى الحلول الخضراء، الطاقة المتجددة، التصميم المنسجم مع البيئة، وقياس الأثر البيئي. تميل للحلول المبتكرة وغير التقليدية.' },
+const DEFAULTS = [
+  {id:1,name:'أ. عبدالرحمن الزهراني',title:'رئيس المجلس',role:'إدارة، مالية، سياحة',exp:'خبرة 20 سنة',emoji:'👔',cls:'c1',
+   persona:'أنت رئيس مجلس استشاري خبير 20 سنة في الإدارة والمالية والسياحة. أسلوبك قيادي. تفتتح الجلسة بتأطير الموضوع وتحديد 3-4 محاور رئيسية. وتختم بتوصيات جامعة.'},
+  {id:2,name:'د. فيصل القحطاني',title:'خبير الاستثمار',role:'سياحة واستثمار',exp:'خبرة 15 سنة',emoji:'✈️',cls:'c2',
+   persona:'أنت خبير استثمار سياحي 15 سنة. تركز على الجدوى الاقتصادية، العوائد المالية، استقطاب المستثمرين، وتجارب دولية ناجحة.'},
+  {id:3,name:'م. نورة آل عمرو',title:'خبيرة الثقافة والبيئة',role:'ثقافة وبيئة وتنمية',exp:'خبرة 15 سنة',emoji:'🌿',cls:'c3',
+   persona:'أنت خبيرة ثقافة وبيئة وتنمية مجتمعية 15 سنة. تركزين على الهوية المحلية، الموروث الثقافي، إشراك المجتمع، والأثر البيئي.'},
+  {id:4,name:'المستشار سليمان العتيبي',title:'الخبير القانوني',role:'قانون وتشريع',exp:'خبير قانوني',emoji:'⚖️',cls:'c4',
+   persona:'أنت خبير قانوني وتشريعي. تركز على التراخيص، الشراكات القانونية، الأطر التنظيمية، والمخاطر القانونية.'},
+  {id:5,name:'م. أحمد الشهري',title:'خبير الاستدامة',role:'استدامة وتصميم حضري',exp:'خبير الاستدامة',emoji:'🌱',cls:'c5',
+   persona:'أنت خبير استدامة بيئية وتصميم حضري. تدعو للحلول الخضراء، الطاقة المتجددة، التصميم المنسجم مع البيئة، والحلول المبتكرة.'},
 ];
 
-let currentTopic = '';
+function loadMembers(){try{const s=localStorage.getItem('council_members');return s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULTS));}catch(e){return JSON.parse(JSON.stringify(DEFAULTS));}}
+function saveMembersStorage(d){localStorage.setItem('council_members',JSON.stringify(d));}
+function getPw(){return localStorage.getItem('council_pw')||'admin2025';}
 
-function setTopic(t) {
-  document.getElementById('topic-input').value = t;
-  document.getElementById('topic-input').focus();
+function renderCards(){
+  const members=loadMembers();
+  document.getElementById('members-grid').innerHTML=members.map(m=>`
+    <div class="member-card" id="mc-${m.id}">
+      <div class="speaking-dot"></div>
+      <div class="member-avatar">${m.emoji}</div>
+      <div class="member-name">${m.name}</div>
+      <div class="member-role">${m.role}</div>
+      <span class="member-exp">${m.exp}</span>
+    </div>`).join('');
 }
 
-function resetSession() {
-  document.getElementById('discussion-area').style.display = 'none';
-  document.getElementById('messages-container').innerHTML = '';
-  document.getElementById('topic-input').value = '';
-  document.querySelectorAll('.member-card').forEach(c => c.classList.remove('speaking'));
-  document.getElementById('btn-start').disabled = false;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function openAdmin(){
+  document.getElementById('admin-modal').classList.add('show');
+  document.getElementById('pw-screen').style.display='block';
+  document.getElementById('editor-screen').style.display='none';
+  document.getElementById('pw-input').value='';
+  document.getElementById('pw-error').textContent='';
+  setTimeout(()=>document.getElementById('pw-input').focus(),200);
 }
+function closeAdmin(){document.getElementById('admin-modal').classList.remove('show');}
+document.getElementById('admin-modal').addEventListener('click',function(e){if(e.target===this)closeAdmin();});
 
-async function startSession() {
-  const topic = document.getElementById('topic-input').value.trim();
-  if (!topic) { document.getElementById('topic-input').focus(); return; }
-
-  currentTopic = topic;
-  document.getElementById('btn-start').disabled = true;
-  document.getElementById('discussion-area').style.display = 'block';
-  document.getElementById('session-topic-display').textContent = topic;
-  document.getElementById('messages-container').innerHTML = '';
-
-  document.getElementById('discussion-area').scrollIntoView({ behavior:'smooth', block:'start' });
-
-  // Build discussion turns: member 1 opens, 2-5 give their view, 1 closes with recommendations
-  const turns = [
-    { memberId: 1, role: 'opener' },
-    { memberId: 2, role: 'specialist' },
-    { memberId: 3, role: 'specialist' },
-    { memberId: 4, role: 'specialist' },
-    { memberId: 5, role: 'specialist' },
-    { memberId: 1, role: 'closer' },
-  ];
-
-  for (let i = 0; i < turns.length; i++) {
-    const turn = turns[i];
-    const member = members[turn.memberId - 1];
-
-    highlightMember(turn.memberId);
-    const typingEl = showTyping(member);
-
-    await delay(1200);
-
-    let content;
-    try {
-      content = await askClaude(topic, turn, member, i);
-    } catch(e) {
-      content = `[خطأ في الاتصال — تأكد من الاتصال بالإنترنت]`;
-    }
-
-    typingEl.remove();
-    appendMessage(member, content, turn.role === 'closer');
-    await delay(3000);
+function checkPw(){
+  if(document.getElementById('pw-input').value===getPw()){
+    document.getElementById('pw-screen').style.display='none';
+    document.getElementById('editor-screen').style.display='block';
+    renderEditor();
+  } else {
+    document.getElementById('pw-error').textContent='❌ كلمة المرور غير صحيحة';
+    document.getElementById('pw-input').value='';
   }
-
-  clearHighlights();
 }
 
-function highlightMember(id) {
-  document.querySelectorAll('.member-card').forEach(c => c.classList.remove('speaking'));
-  document.getElementById(`mc-${id}`).classList.add('speaking');
+function renderEditor(){
+  const members=loadMembers();
+  const clrs=['rgba(201,168,76,.2)','rgba(77,168,218,.2)','rgba(46,204,138,.2)','rgba(232,85,106,.2)','rgba(26,188,156,.2)'];
+  document.getElementById('editor-list').innerHTML=members.map((m,i)=>`
+    <div class="member-editor">
+      <div class="med-header">
+        <div class="med-num" style="background:${clrs[i]}">${m.emoji}</div>
+        <b>العضو ${i+1}${i===0?' — رئيس المجلس':''}</b>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>الاسم</label><input id="m${i}_name" value="${m.name}"></div>
+        <div class="fg"><label>المنصب / اللقب</label><input id="m${i}_title" value="${m.title}"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>التخصص (البطاقة)</label><input id="m${i}_role" value="${m.role}"></div>
+        <div class="fg"><label>الخبرة</label><input id="m${i}_exp" value="${m.exp}"></div>
+      </div>
+      <div class="frow full">
+        <div class="fg">
+          <label>شخصية العضو — كيف يفكر ويناقش (كلما كانت أدق كانت النتائج أفضل)</label>
+          <textarea id="m${i}_persona">${m.persona}</textarea>
+        </div>
+      </div>
+    </div>`).join('');
 }
 
-function clearHighlights() {
-  document.querySelectorAll('.member-card').forEach(c => c.classList.remove('speaking'));
+function saveMembers(){
+  const members=loadMembers();
+  members.forEach((m,i)=>{
+    m.name=document.getElementById(`m${i}_name`).value.trim()||m.name;
+    m.title=document.getElementById(`m${i}_title`).value.trim()||m.title;
+    m.role=document.getElementById(`m${i}_role`).value.trim()||m.role;
+    m.exp=document.getElementById(`m${i}_exp`).value.trim()||m.exp;
+    m.persona=document.getElementById(`m${i}_persona`).value.trim()||m.persona;
+  });
+  saveMembersStorage(members);
+  renderCards();
+  const msg=document.getElementById('save-msg');
+  msg.textContent='✅ تم الحفظ وتطبيق التعديلات على المجلس';
+  setTimeout(()=>msg.textContent='',3000);
 }
 
-function showTyping(member) {
-  const el = document.createElement('div');
-  el.className = 'typing-indicator';
-  el.innerHTML = `
-    <div class="msg-avatar ${member.cls}" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1px solid transparent;">${member.emoji}</div>
-    <div style="display:flex;align-items:center;gap:8px;padding-top:8px;">
-      <span style="font-size:12px;color:var(--muted);">${member.name} يكتب...</span>
-      <div class="typing-dots"><span></span><span></span><span></span></div>
-    </div>`;
+function resetDefaults(){
+  if(!confirm('استعادة الأعضاء الافتراضيين؟ ستُحذف تعديلاتك.'))return;
+  localStorage.removeItem('council_members');
+  renderCards();renderEditor();
+  const msg=document.getElementById('save-msg');
+  msg.textContent='✅ تم استعادة الأعضاء الافتراضيين';
+  setTimeout(()=>msg.textContent='',3000);
+}
+
+function changePw(){
+  const v=document.getElementById('new-pw').value.trim();
+  const msg=document.getElementById('cpw-msg');
+  if(!v||v.length<4){msg.style.color='var(--rose)';msg.textContent='4 أحرف على الأقل';return;}
+  localStorage.setItem('council_pw',v);
+  document.getElementById('new-pw').value='';
+  msg.style.color='var(--green)';msg.textContent='✅ تم تغيير كلمة المرور';
+  setTimeout(()=>msg.textContent='',3000);
+}
+
+// ── SESSION ──
+function setTopic(t){document.getElementById('topic-input').value=t;document.getElementById('topic-input').focus();}
+
+function resetSession(){
+  document.getElementById('discussion-area').style.display='none';
+  document.getElementById('messages-container').innerHTML='';
+  document.getElementById('topic-input').value='';
+  document.querySelectorAll('.member-card').forEach(c=>c.classList.remove('speaking'));
+  document.getElementById('btn-start').disabled=false;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function startSession(){
+  const topic=document.getElementById('topic-input').value.trim();
+  if(!topic){document.getElementById('topic-input').focus();return;}
+  document.getElementById('btn-start').disabled=true;
+  document.getElementById('discussion-area').style.display='block';
+  document.getElementById('session-topic-display').textContent=topic;
+  document.getElementById('messages-container').innerHTML='';
+  document.getElementById('discussion-area').scrollIntoView({behavior:'smooth',block:'start'});
+  const members=loadMembers();
+  const turns=[{i:1,role:'opener'},{i:2,role:'specialist'},{i:3,role:'specialist'},{i:4,role:'specialist'},{i:5,role:'specialist'},{i:1,role:'closer'}];
+  for(const turn of turns){
+    const m=members[turn.i-1];
+    highlight(turn.i);
+    const typing=showTyping(m);
+    await delay(1000);
+    let content;
+    try{content=await askAI(topic,turn.role,m);}
+    catch(e){content='[خطأ في الاتصال — تأكد من الاتصال بالإنترنت]';}
+    typing.remove();
+    appendMsg(m,content,turn.role==='closer');
+    await delay(2000);
+  }
+  document.querySelectorAll('.member-card').forEach(c=>c.classList.remove('speaking'));
+}
+
+function highlight(id){
+  document.querySelectorAll('.member-card').forEach(c=>c.classList.remove('speaking'));
+  const el=document.getElementById(`mc-${id}`);
+  if(el)el.classList.add('speaking');
+}
+
+function showTyping(m){
+  const el=document.createElement('div');
+  el.className='typing-indicator';
+  el.innerHTML=`<div class="msg-avatar ${m.cls}">${m.emoji}</div><div style="display:flex;align-items:center;gap:8px;padding-top:8px;"><span style="font-size:12px;color:var(--muted);">${m.name} يكتب...</span><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
   document.getElementById('messages-container').appendChild(el);
-  el.scrollIntoView({ behavior:'smooth', block:'end' });
+  el.scrollIntoView({behavior:'smooth',block:'end'});
   return el;
 }
 
-function appendMessage(member, htmlContent, isResolution = false) {
-  const el = document.createElement('div');
-  el.className = `message ${member.cls}`;
-
-  if (isResolution) {
-    el.innerHTML = `
-      <div class="msg-avatar">${member.emoji}</div>
-      <div class="msg-content">
-        <div class="msg-header">
-          <span class="msg-name">${member.name}</span>
-          <span class="msg-title-tag">${member.title}</span>
-        </div>
-        <div class="resolution-wrapper">${htmlContent}</div>
-      </div>`;
-  } else {
-    el.innerHTML = `
-      <div class="msg-avatar">${member.emoji}</div>
-      <div class="msg-content">
-        <div class="msg-header">
-          <span class="msg-name">${member.name}</span>
-          <span class="msg-title-tag">${member.title}</span>
-        </div>
-        <div class="msg-text">${htmlContent}</div>
-      </div>`;
-  }
-
+function appendMsg(m,html,isRes=false){
+  const el=document.createElement('div');
+  el.className=`message ${m.cls}`;
+  el.innerHTML=isRes?`<div class="msg-avatar">${m.emoji}</div><div class="msg-content"><div class="msg-header"><span class="msg-name">${m.name}</span><span class="msg-title-tag">${m.title}</span></div><div class="resolution-wrapper">${html}</div></div>`
+  :`<div class="msg-avatar">${m.emoji}</div><div class="msg-content"><div class="msg-header"><span class="msg-name">${m.name}</span><span class="msg-title-tag">${m.title}</span></div><div class="msg-text">${html}</div></div>`;
   document.getElementById('messages-container').appendChild(el);
-  el.scrollIntoView({ behavior:'smooth', block:'end' });
+  el.scrollIntoView({behavior:'smooth',block:'end'});
 }
 
-async function askClaude(topic, turn, member, index) {
-  const isOpener = turn.role === 'opener';
-  const isCloser = turn.role === 'closer';
-
-  let instructions = '';
-
-  if (isOpener) {
-    instructions = `
-أنت ${member.name}، ${member.persona}.
-
-موضوع الجلسة: "${topic}"
-
-قدّم افتتاحية الجلسة كرئيس للمجلس بأسلوب رسمي ولكن سلس. يجب أن:
-- ترحب بالأعضاء وتؤطر الموضوع بشكل استراتيجي
-- تضع 3-4 محاور رئيسية يجب أن يتناولها النقاش
-- تذكر أهمية الموضوع وارتباطه بالتوجهات الاستراتيجية
-
-أجب بـ HTML فقط بدون أي مقدمة. استخدم <b> للنقاط المهمة و<br> للأسطر الجديدة، ولا تستخدم أي تنسيق آخر. أجب باللغة العربية الفصحى المبسطة في 120-160 كلمة.`;
-
-  } else if (isCloser) {
-    instructions = `
-أنت ${member.name}، ${member.persona}.
-
-موضوع الجلسة: "${topic}"
-
-قدّم الكلمة الختامية كرئيس المجلس وأعلن التوصيات النهائية. يجب أن تكون التوصيات:
-- 5 توصيات إبداعية وعملية وقابلة للتطبيق
-- مبنية على ما ناقشه الأعضاء (المنظور الاقتصادي، الثقافي، القانوني، البيئي)
-- جريئة وغير تقليدية
-
-أجب بـ HTML فقط في الشكل الآتي بالضبط:
-<h3>📜 التوصيات الختامية للمجلس</h3>
-ثم 5 توصيات بالشكل:
-<div class="rec-item"><div class="rec-num">1</div><div class="rec-text"><strong>عنوان التوصية</strong> — شرح مختصر ومقنع لها يبلغ 2-3 جمل.</div></div>
-
-لا تضف أي نص خارج هذا الهيكل. أجب باللغة العربية الفصحى المبسطة.`;
-
+async function askAI(topic,role,member){
+  let prompt='';
+  if(role==='opener'){
+    prompt=`أنت ${member.name}. ${member.persona}\n\nموضوع الجلسة: "${topic}"\n\nافتتح الجلسة كرئيس مجلس: أطّر الموضوع وحدد 3-4 محاور للنقاش.\nأجب بـHTML فقط، استخدم <b> للنقاط المهمة و<br> للأسطر. 120-160 كلمة.`;
+  } else if(role==='closer'){
+    prompt=`أنت ${member.name}. ${member.persona}\n\nموضوع الجلسة: "${topic}"\n\nاختم الجلسة بـ5 توصيات إبداعية وعملية.\nأجب بهذا الهيكل بالضبط:\n<h3>📜 التوصيات الختامية للمجلس</h3>\n<div class="rec-item"><div class="rec-num">1</div><div class="rec-text"><strong>عنوان</strong> — شرح 2-3 جمل.</div></div>\nكرر لـ5 توصيات. لا تضف أي نص خارج الهيكل.`;
   } else {
-    instructions = `
-أنت ${member.name}، ${member.persona}.
-
-موضوع الجلسة: "${topic}"
-
-قدّم مداخلتك المتخصصة في الجلسة. يجب أن:
-- تبدأ بجملة تربطك بما سبق
-- تطرح 3 نقاط أساسية من منظورك المتخصص تحديداً
-- تضيف قيمة مختلفة عن بقية الأعضاء
-- تختم برأي أو توصية مبدئية من منظورك
-
-أجب بـ HTML فقط بدون أي مقدمة. استخدم <b> للنقاط المهمة، و<br> للأسطر الجديدة، ولا تستخدم قوائم أو tags أخرى. أجب باللغة العربية الفصحى المبسطة في 130-180 كلمة.`;
+    prompt=`أنت ${member.name}. ${member.persona}\n\nموضوع الجلسة: "${topic}"\n\nقدّم مداخلتك: 3 نقاط من منظورك المتخصص تحديداً، مختلفة عن بقية الأعضاء.\nأجب بـHTML فقط، استخدم <b> للنقاط المهمة و<br> للأسطر. 130-180 كلمة.`;
   }
-
-  const response = await fetch('/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      messages: [{ role: 'user', content: instructions }]
-    })
-  });
-
-  const data = await response.json();
-  const text = data.content.map(b => b.text || '').join('');
-  return text.trim();
+  const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:prompt}]})});
+  const d=await r.json();
+  return(d.content||[]).map(b=>b.text||'').join('').trim();
 }
 
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// INIT
+renderCards();
 </script>
 </body>
 </html>
